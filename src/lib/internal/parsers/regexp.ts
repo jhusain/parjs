@@ -18,7 +18,6 @@ import {ParjserBase} from "../parser";
 export function regexp(origRegexp: RegExp): Parjser<string[]> {
     let flags = [origRegexp.ignoreCase && "i", origRegexp.multiline && "m"].filter(x => x).join("");
     let regexp = new RegExp(origRegexp.source, `${flags}y`);
-    // this.reason = `expecting input matching /${origRegexp.source}/`;
     return new class Regexp extends ParjserBase {
         type = "regexp";
         expecting = `expecting input matching '${regexp.source}'`;
@@ -28,6 +27,7 @@ export function regexp(origRegexp: RegExp): Parjser<string[]> {
             let match = regexp.exec(input);
             if (!match) {
                 ps.kind = ResultKind.SoftFail;
+                ps.reason = `expecting input matching /${origRegexp.source}/`;
                 return;
             }
             ps.position += match[0].length;
